@@ -1,0 +1,13 @@
+name: Empty Action
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  empty_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Empty Step
+        run: echo "This is an empty action"
