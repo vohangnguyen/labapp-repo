@@ -63,9 +63,9 @@ jobs:
       #      exit 1
        #   fi
 
-      - name: Stop Application
-        run: pkill -f 'java -jar target/cloud-usage-calculator-1.0-SNAPSHOT.jar'
+     # - name: Stop Application
+      #  run: pkill -f 'java -jar target/cloud-usage-calculator-1.0-SNAPSHOT.jar'
 
-      - name: Output Application Logs on Failure
-        if: failure()
-        run: cat app.log
+     # - name: Output Application Logs on Failure
+      #  if: failure()
+       # run: cat app.log
