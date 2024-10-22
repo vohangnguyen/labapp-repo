@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build with Maven
+        run: mvn clean package
+
+      - name: Run Spring Boot Application
+        run: |
+          nohup java -jar target/cloud-usage-calculator-1.0-SNAPSHOT.jar > app.log &
+          sleep 5 # Warten, bis die Anwendung startet
+
+      - name: Test Application
+        run: |
+          RESPONSE=$(curl -s -X GET localhost:8080/v1/result)
+          echo $RESPONSE
+          if [[ $RESPONSE != *"expected_value"* ]]; then
+            echo "Test failed: unexpected response"
+            exit 1
+          fi
+
+      - name: Stop Application
+        run: |
+          pkill -f 'java -jar target/cloud-usage-calculator-1.0-SNAPSHOT.jar' || true
