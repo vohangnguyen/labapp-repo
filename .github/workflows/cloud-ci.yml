@@ -11,26 +11,37 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3 # Update to the latest version
+        uses: actions/checkout@v3
 
       - name: Set up JDK
-        uses: actions/setup-java@v3 # Update to the latest version
+        uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'temurin' # Specify the Java distribution
+          distribution: 'temurin'
 
       - name: Build with Maven
         run: mvn clean package
 
       - name: Run Spring Boot Application
         run: |
-          nohup java -jar target/cloud-usage-calculator-1.0-SNAPSHOT.jar > app.log &
-          sleep 5 # Wait for the application to start
+          nohup java -jar target/cloud-usage-calculator-1.0-SNAPSHOT.jar > app.log 2>&1 &
+          sleep 10 # Wait longer for the application to start
+
+      - name: Wait for Application to be Ready
+        run: |
+          for i in {1..10}; do
+            if curl -s http://localhost:8080/v1/result; then
+              echo "Application is up!"
+              break
+            fi
+            echo "Waiting for application to start..."
+            sleep 5
+          done
 
       - name: Test Application
         run: |
           RESPONSE=$(curl -s -X GET localhost:8080/v1/result)
-          echo $RESPONSE
+          echo "Response: $RESPONSE"
           if [[ $RESPONSE != *"expected_value"* ]]; then
             echo "Test failed: unexpected response"
             exit 1
@@ -39,3 +50,9 @@ jobs:
       - name: Stop Application
         run: |
           pkill -f 'java -jar target/cloud-usage-calculator-1.0-SNAPSHOT.jar' || true
+
+      - name: Output Application Logs
+        if: failure()
+        run: |
+          echo "Application logs:"
+          cat app.log
