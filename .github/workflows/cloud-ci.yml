@@ -11,13 +11,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3 # Update to the latest version
 
       - name: Set up JDK
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3 # Update to the latest version
         with:
           java-version: '17'
-          distribution: 'temurin'
+          distribution: 'temurin' # Specify the Java distribution
 
       - name: Build with Maven
         run: mvn clean package
@@ -25,7 +25,7 @@ jobs:
       - name: Run Spring Boot Application
         run: |
           nohup java -jar target/cloud-usage-calculator-1.0-SNAPSHOT.jar > app.log &
-          sleep 5 # Warten, bis die Anwendung startet
+          sleep 5 # Wait for the application to start
 
       - name: Test Application
         run: |
