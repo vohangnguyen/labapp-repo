@@ -47,9 +47,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>3.0.0</version>
-                <configuration>
-                    <mainClass>de.hhn.labapp.ln1.CloudUsageApplication</mainClass> <!-- Update to match your class -->
-                </configuration>
             </plugin>
 
             <!-- Versions plugin for managing dependencies -->
