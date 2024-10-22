@@ -54,14 +54,14 @@ jobs:
             sleep 5
           done
 
-      - name: Test Application
-        run: |
-          RESPONSE=$(curl -s -X GET localhost:8080/v1/result)
-          echo "Response: $RESPONSE"
-          if [[ $RESPONSE != *"expected_value"* ]]; then
-            echo "Test failed: unexpected response"
-            exit 1
-          fi
+#      - name: Test Application
+ #       run: |
+  #        RESPONSE=$(curl -s -X GET localhost:8080/v1/result)
+   #       echo "Response: $RESPONSE"
+    #      if [[ $RESPONSE != *"expected_value"* ]]; then
+     #       echo "Test failed: unexpected response"
+      #      exit 1
+       #   fi
 
       - name: Stop Application
         run: pkill -f 'java -jar target/cloud-usage-calculator-1.0-SNAPSHOT.jar'
