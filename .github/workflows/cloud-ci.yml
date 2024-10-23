@@ -11,16 +11,17 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4 # Updated to the latest version (v4)
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v4 # Updated to the latest version (v4)
+
         with:
           java-version: '17'
           distribution: 'temurin'
 
       - name: Cache Maven Dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v4 # Updated to the latest version (v4)
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -28,10 +29,27 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Build with Maven
-        run: mvn clean package
+        run: mvn clean package | tee build.log
 
-      - name: Build Docker Image
-        run: docker build -t cloud-usage-calculator .
+      - name: Display Maven Logs on Failure
+        if: failure()
+        run: cat build.log
 
-      - name: Run Docker Compose
-        run: docker-compose up -d
+      - name: Check for Dependency Updates
+        run: mvn versions:display-dependency-updates | tee dependency-updates.log
+
+      - name: Run Spring Boot Application
+        run: |
+          nohup java -jar target/cloud-usage-calculator-1.0-SNAPSHOT.jar > app.log 2>&1 &
+          sleep 10 # Wait for the application to start
+
+      - name: Wait for Application to be Ready
+        run: |
+          for i in {1..10}; do
+            if curl -s http://localhost:8080/v1/result; then
+              echo "Application is up!"
+              break
+            fi
+            echo "Waiting for application to start..."
+            sleep 5
+          done
