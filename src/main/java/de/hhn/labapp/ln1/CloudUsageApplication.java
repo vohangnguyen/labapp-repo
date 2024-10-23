@@ -2,11 +2,20 @@ package de.hhn.labapp.ln1;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
+
 
 @SpringBootApplication
 public class CloudUsageApplication {
+
     public static void main(String[] args) {
         SpringApplication.run(CloudUsageApplication.class, args);
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }
 

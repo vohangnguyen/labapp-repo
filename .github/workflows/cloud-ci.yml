@@ -11,17 +11,16 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4 # Updated to the latest version (v4)
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4 # Updated to the latest version (v4)
-
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
       - name: Cache Maven Dependencies
-        uses: actions/cache@v4 # Updated to the latest version (v4)
+        uses: actions/cache@v4
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -41,7 +40,7 @@ jobs:
       - name: Run Spring Boot Application
         run: |
           nohup java -jar target/cloud-usage-1.0-SNAPSHOT.jar > app.log 2>&1 &
-          sleep 10 # Wait for the application to start
+          sleep 10
 
       - name: Wait for Application to be Ready
         run: |
@@ -53,3 +52,24 @@ jobs:
             echo "Waiting for application to start..."
             sleep 5
           done
+
+      - name: Test Application with POST Request
+        run: |
+          curl -X POST http://localhost:8080/v1/dataset \
+          -H "Content-Type: application/json" \
+          -d '[
+            {
+              "customerId": "342a55a3-b138-4665-8351-111b28833d34",
+              "workloadId": "53ddf5cf-7a12-4b7f-8751-48757774c0c5",
+              "timestamp": 1699872883000,
+              "eventType": "start"
+            },
+            {
+              "customerId": "342a55a3-b138-4665-8351-111b28833d34",
+              "workloadId": "53ddf5cf-7a12-4b7f-8751-48757774c0c5",
+              "timestamp": 1700401984000,
+              "eventType": "stop"
+            }
+          ]'
+          sleep 5
+          curl http://localhost:8080/v1/result

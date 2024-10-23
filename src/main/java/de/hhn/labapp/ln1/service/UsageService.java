@@ -3,6 +3,7 @@ package de.hhn.labapp.ln1.service;
 import de.hhn.labapp.ln1.model.Event;
 import de.hhn.labapp.ln1.model.Result;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
@@ -10,6 +11,12 @@ import java.util.*;
 public class UsageService {
     private final Map<String, Long> customerUsage = new HashMap<>();
     private final Map<String, Long> startTimestamps = new HashMap<>();
+
+    private final RestTemplate restTemplate;
+
+    public UsageService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     public void processEvents(List<Event> events) {
         for (Event event : events) {
@@ -33,6 +40,19 @@ public class UsageService {
             result.setConsumption(entry.getValue());
             results.add(result);
         }
+
+        // Sende die Ergebnisse an das Referenzsystem
+        sendResultsToAssessment(results);
         return results;
+    }
+
+    private void sendResultsToAssessment(List<Result> results) {
+        String assessmentUrl = "http://assessment:8080/assessment";
+        try {
+            restTemplate.postForObject(assessmentUrl, results, String.class);
+            System.out.println("Ergebnisse erfolgreich gesendet.");
+        } catch (Exception e) {
+            System.err.println("Fehler beim Senden der Ergebnisse an das Assessment-System: " + e.getMessage());
+        }
     }
 }
