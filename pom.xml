@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>de.hhn.labapp</groupId>
-    <artifactId>cloud-usage-calculator</artifactId>
+    <artifactId>cloud-usage</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
