@@ -53,6 +53,3 @@ jobs:
             echo "Waiting for application to start..."
             sleep 5
           done
-
-      - name: Stop Application
-        run: pkill -f 'java -jar target/cloud-usage-1.0-SNAPSHOT.jar'
