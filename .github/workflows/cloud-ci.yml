@@ -40,7 +40,7 @@ jobs:
 
       - name: Run Spring Boot Application
         run: |
-          nohup java -jar target/cloud-usage-calculator-1.0-SNAPSHOT.jar > app.log 2>&1 &
+          nohup java -jar target/cloud-usage-1.0-SNAPSHOT.jar > app.log 2>&1 &
           sleep 10 # Wait for the application to start
 
       - name: Wait for Application to be Ready
@@ -53,3 +53,6 @@ jobs:
             echo "Waiting for application to start..."
             sleep 5
           done
+
+      - name: Stop Application
+        run: pkill -f 'java -jar target/cloud-usage-1.0-SNAPSHOT.jar'
