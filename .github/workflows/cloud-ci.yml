@@ -54,18 +54,41 @@ jobs:
             sleep 5
           done
 
-#      - name: Test Application
- #       run: |
-  #        RESPONSE=$(curl -s -X GET localhost:8080/v1/result)
-   #       echo "Response: $RESPONSE"
-    #      if [[ $RESPONSE != *"expected_value"* ]]; then
-     #       echo "Test failed: unexpected response"
-      #      exit 1
-       #   fi
+      - name: Test POST Request
+        run: |
+          curl -X POST http://localhost:8080/v1/dataset \
+          -H "Content-Type: application/json" \
+          -d '[
+            {
+              "customerId": "342a55a3-b138-4665-8351-111b28833d34",
+              "workloadId": "53ddf5cf-7a12-4b7f-8751-48757774c0c5",
+              "timestamp": 1699872883000,
+              "eventType": "start"
+            },
+            {
+              "customerId": "342a55a3-b138-4665-8351-111b28833d34",
+              "workloadId": "53ddf5cf-7a12-4b7f-8751-48757774c0c5",
+              "timestamp": 1700401984000,
+              "eventType": "stop"
+            }
+          ]'
 
-     # - name: Stop Application
-      #  run: pkill -f 'java -jar target/cloud-usage-calculator-1.0-SNAPSHOT.jar'
+      - name: Test GET Request and Validate Result
+        run: |
+          RESPONSE=$(curl -s -X GET http://localhost:8080/v1/result)
+          echo "Response: $RESPONSE"
+          EXPECTED='[{"customerId":"342a55a3-b138-4665-8351-111b28833d34","consumption":529101000}]'
 
-     # - name: Output Application Logs on Failure
-      #  if: failure()
-       # run: cat app.log
+          if [[ "$RESPONSE" == *"$EXPECTED"* ]]; then
+            echo "Test passed: response matches expected result"
+          else
+            echo "Test failed: response does not match expected result"
+            exit 1
+          fi
+
+      - name: Stop Application
+        run: pkill -f 'java -jar target/cloud-usage-calculator-1.0-SNAPSHOT.jar'
+
+      - name: Output Application Logs on Failure
+        if: failure()
+        run: cat app.log

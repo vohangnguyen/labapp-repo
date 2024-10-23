@@ -3,7 +3,6 @@ package de.hhn.labapp.ln1.controller;
 import de.hhn.labapp.ln1.model.Event;
 import de.hhn.labapp.ln1.model.Result;
 import de.hhn.labapp.ln1.service.UsageService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,8 +11,11 @@ import java.util.List;
 @RequestMapping("/v1")
 public class UsageController {
 
-    @Autowired
-    private UsageService usageService;
+    private final UsageService usageService;
+
+    public UsageController(UsageService usageService) {
+        this.usageService = usageService;
+    }
 
     @PostMapping("/dataset")
     public void addEvents(@RequestBody List<Event> events) {
