@@ -30,20 +30,17 @@ jobs:
       - name: Build with Maven
         run: mvn clean package | tee build.log
 
-      - name: Display Maven Logs on Failure
-        if: failure()
+      - name: Display Build Logs
+        if: failure()  # Only run if the build step failed
         run: cat build.log
 
       - name: List Target Directory
         run: ls -l target/  # Check if JAR file was created
 
-      - name: Check for Dependency Updates
-        run: mvn versions:display-dependency-updates | tee dependency-updates.log
-
       - name: Run Spring Boot Application
         run: |
-          nohup java -jar target/cloud-usage-calculator-1.0-SNAPSHOT.jar > app.log 2>&1 &
-          sleep 15 # Wait for the application to start
+          nohup java -jar target/cloud-usage-1.0-SNAPSHOT.jar > app.log 2>&1 &
+          sleep 15  # Wait for the application to start
 
       - name: Wait for Application to be Ready
         run: |
@@ -89,7 +86,7 @@ jobs:
           fi
 
       - name: Stop Application
-        run: pkill -f 'java -jar target/cloud-usage-calculator-1.0-SNAPSHOT.jar'
+        run: pkill -f 'java -jar target/cloud-usage-1.0-SNAPSHOT.jar'
 
       - name: Output Application Logs on Failure
         if: failure()
